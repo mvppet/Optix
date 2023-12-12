@@ -4,7 +4,7 @@ public class Movie
 {
 	public required string Title { get; set; }
 
-	public DateOnly Released { get; set; }
+	public DateTime ReleaseDate { get; set; }
 
 	public decimal Score { get; set; }
 
