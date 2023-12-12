@@ -6,5 +6,6 @@ public class MovieSearchResults
 	public List<Genre> Genres { get; set; } = [];
 	public List<Actor> Actors { get; set; } = [];
 	public int TotalResults { get; set; } = 0;
+	public string? ErrorMessage { get; set; }
 
 }

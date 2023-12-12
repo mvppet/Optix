@@ -9,15 +9,14 @@ namespace OptixTechnicalTest.Server.Controllers;
 [Route("[controller]")]
 public class MovieSearchController(ILogger<MovieSearchController> logger, IDbConnectionApi db) : ControllerBase
 {
-	static readonly string[] SearchFields = ["", "Name", "ReleaseDate", "Score"];
+	static readonly string[] OrderByFields = ["", "Name", "ReleaseDate", "Score"];
 
 	[HttpPost(Name = "SearchMovies")]
 	public async Task<MovieSearchResults> Post(string movieNameSubstring, string? orderByField, bool? orderAscending, string? genreIdFilter, string? actorIdFilter, int? pageLength, int? pageNumber)
 	{
 		if ((movieNameSubstring?.Length ?? 0) < 2)
 		{
-			logger.LogError("search phrase needs to be at least 2 characters");
-			return new MovieSearchResults();
+			return new MovieSearchResults { ErrorMessage= "search phrase needs to be at least 2 characters" };
 		}
 
 		logger.LogInformation($"searching for {movieNameSubstring} page");
@@ -33,9 +32,9 @@ public class MovieSearchController(ILogger<MovieSearchController> logger, IDbCon
 			ActorList = actorIdFilter ?? string.Empty
 		};
 
-		if (!SearchFields.Contains(orderBy.OrderByField))
+		if (!OrderByFields.Contains(orderBy.OrderByField))
 		{
-			logger.LogError($"'orderByField' should be one of {string.Join(", ", SearchFields)}, but is provided as '{orderBy.OrderByField}'");
+			return new MovieSearchResults { ErrorMessage = $"'orderByField' should be one of '{string.Join("', '", OrderByFields)}', but is provided as '{orderBy.OrderByField}'" };
 		}
 
 		return await db.SearchMovies(movieNameSubstring!, orderBy, filterBy, pageLength, pageNumber);
