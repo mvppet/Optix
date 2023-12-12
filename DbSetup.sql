@@ -1,5 +1,7 @@
 -- CSV Header: names,date_x,score,genre,overview,crew,orig_title,status,orig_lang,budget_x,revenue,country
 
+drop procedure if exists dbo.SearchMovies;
+go
 drop view if exists [vMovieCastMembers];
 go
 drop view if exists [vMovieGenres]
@@ -124,7 +126,7 @@ AS
 		INNER JOIN	dbo.Genre AS g ON mg.GenreId = g.Id
 GO
 
-CREATE OR ALTER PROCEDURE dbo.SearchMovies
+CREATE PROCEDURE dbo.SearchMovies
 (
 	@nameSubstring	varchar(1024),
 	@genres			varchar(1024),
