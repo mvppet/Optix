@@ -1,3 +1,4 @@
+using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
 using OptixTechnicalTest.DataLayer.Interfaces;
 using OptixTechnicalTest.Dto;
@@ -8,13 +9,14 @@ namespace OptixTechnicalTest.Server.Controllers;
 [Route("[controller]")]
 public class MovieSearchController(ILogger<MovieSearchController> logger, IDbConnectionApi db) : ControllerBase
 {
+	static readonly string[] SearchFields = ["", "Name", "ReleaseDate", "Score"];
+
 	[HttpPost(Name = "SearchMovies")]
 	public async Task<MovieSearchResults> Post(string movieNameSubstring, string? orderByField, bool? orderAscending, string? genreIdFilter, string? actorIdFilter, int? pageLength, int? pageNumber)
 	{
-		if ((movieNameSubstring?.Length ?? 0) == 0)
+		if ((movieNameSubstring?.Length ?? 0) < 2)
 		{
-			var errorText = "search phrase is missing";
-			logger.LogError(errorText);
+			logger.LogError("search phrase needs to be at least 2 characters");
 			return new MovieSearchResults();
 		}
 
@@ -30,6 +32,11 @@ public class MovieSearchController(ILogger<MovieSearchController> logger, IDbCon
 			GenreList = genreIdFilter ?? string.Empty,
 			ActorList = actorIdFilter ?? string.Empty
 		};
+
+		if (!SearchFields.Contains(orderBy.OrderByField))
+		{
+			logger.LogError($"'orderByField' should be one of {string.Join(", ", SearchFields)}, but is provided as '{orderBy.OrderByField}'");
+		}
 
 		return await db.SearchMovies(movieNameSubstring!, orderBy, filterBy, pageLength, pageNumber);
 	}

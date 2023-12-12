@@ -2,7 +2,7 @@
 
 public class Movie
 {
-	public required string Title { get; set; }
+	public required string Name { get; set; }
 
 	public DateTime ReleaseDate { get; set; }
 
